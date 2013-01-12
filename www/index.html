@@ -3,126 +3,26 @@
   <head>
   <title></title>
   
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user scalable=no;" />
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user scalable=no;" /> -->
     <meta charset="utf-8">
-
-
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
     <script type="text/javascript" charset="utf-8" src="cordova-1.7.0.js"></script>
-    <script type="text/javascript" charset="utf-8" src="pgsqlite_plugin.js"></script>
     <script type="text/javascript">
-
-    window.onerror = function (e, url, line) {
-        alert("window.onerror ---");
-        alert(JSON.stringify(e, null, '  '));
-        alert(JSON.stringify(line, null, '  '));
-    };
-    
-	function onBodyLoad(){		
-        alert("loaded");
-        document.addEventListener("deviceready", onDeviceReady, false);
-    }
-	
-	function onDeviceReady(){        
-        alert('start');
-        var db = new PGSQLitePlugin('testdb', onOpen, onFail);
-        
-        function onFail (e) {
-            alert("Error");
-            var error = JSON.stringify(e, null, '  ');
-            alert(error);
-            alert(error);
+        function funcionesDeCarga()
+        {
+            $.ajax({
+                url: 'php/ajax/funciones.php',
+                data: 'h=traeCosas',
+                type: 'POST',
+                dataType: 'json',
+                success: function(v){
+                    alert(v['aviso']);
+                }
+            });
         }
-        
-        function onOpen () {
-            alert('Database opened');
-            createTable();
-        }
-        
-        function createTable () {
-            alert('Creating test table');
-            var query = '' +
-                'CREATE TABLE IF NOT EXISTS "test" (' +
-                'Id INTEGER PRIMARY KEY AUTOINCREMENT,' +
-                'valore VARCHAR(100)' +
-                ');' + 
-                '';
-            db.executeSql(query, onCreateTable, onFail);
-        }
-        
-        function onCreateTable () {
-            alert('-> Test table created');
-            dropTable();
-        }
-        
-        function dropTable () {
-            alert('Clean test table');
-            var query = 'DELETE FROM "test" WHERE 1 = 1;';
-            db.executeSql(query, onDropTable, onFail);
-        }
-        
-        function onDropTable () {
-            alert('-> Test table cleaned');
-            setData();
-        }
-        
-        function setData () {
-            alert('Insert some data in the table');
-            var query = 'INSERT INTO "test" VALUES(1, "ciao");';
-            db.executeSql(query, onSetData, onFail);
-        }
-        
-        function onSetData () {
-            alert('-> Data has been set');
-            getData();
-        }
-        
-        function getData () {
-            alert('Getting data');
-            var query = 'SELECT * FROM "test" where Id = 1;'
-            db.executeSql(query, onGetData, onFail);
-        }
-        
-        function onGetData(res) {
-            alert('-> Got the data');
-            alert(res);
-            
-            function onRow (row) {
-                alert(JSON.stringify (row, null, '  '));
-            }
-            
-            res.rows.forEach (onRow);
-            transact ();
-        }
-        
-        function transact () {
-            alert("Start a transaction");
-            db.transaction (onTransaction);
-        }
-        
-        function onTransaction (tx) {
-            alert("Execute transaction");
-            tx.executeSql(['SELECT * FROM "test" where Id = 1;'], onTxDone, onFail);
-        }
-        
-        function onTxDone (res) {
-            alert('-> Got the data from transaction');
-            alert(res);
-            
-            function onRow (row) {
-                alert(JSON.stringify (row, null, '  '));
-            }
-            
-            res.rows.forEach (onRow);
-        }
-        
-	}
-    
     </script>
   </head>
-  <body onload="onBodyLoad()">
-	<h1>Hey, it's Cordova!</h1>
-    <input type="button" onclick="onDeviceReady()" value=" Abrir "/>
-    <input type="button" onclick="setData()" value=" Guardar " />
-    <input type="button" onclick="getData()" value=" mostrar " />
+  <body onload="funcionesDeCarga()">
+	<h1>Testeo de app online</h1>
   </body>
 </html>
